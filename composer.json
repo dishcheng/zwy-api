@@ -1,0 +1,20 @@
+{
+  "name": "dishcheng/zwy-api",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "caicheng",
+      "email": "caicheng@lvbaocloud.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "DishCheng\\ZwyApi\\": "src/"
+    }
+  },
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=7.0.0",
+    "guzzlehttp/guzzle": "^6"
+  }
+}
