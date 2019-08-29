@@ -39,10 +39,12 @@ class ZwyApiParkViewProduct extends Model
         return self::newFromBuilder($data);
     }
 
+
     /**
      * 调用列表接口
+     * @param int $perPage
      * @return LengthAwarePaginator
-     * @throws \Exception
+     * @throws ZwyApiException
      */
     public static function paginate($perPage = 20)
     {

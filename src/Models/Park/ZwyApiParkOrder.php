@@ -51,7 +51,7 @@ class ZwyApiParkOrder extends Model
      * @return LengthAwarePaginator
      * @throws \Exception
      */
-    public function paginate($perPage = 20)
+    public static function paginate($perPage = 20)
     {
         $currentPage = Request::get('page', 1);
         //获取数据数组

@@ -18,7 +18,6 @@ class ZwyApiParkView extends Model
 {
     public static function paginate($perPage = 20)
     {
-        $perPage = Request::get('per_page', 20);
         $currentPage = Request::get('page', 1);
         //获取数据数组
         $service = ZwyParkService::getInstance();
