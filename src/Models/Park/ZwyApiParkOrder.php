@@ -6,6 +6,7 @@ use App\Constant\Constant;
 use DishCheng\ZwyApi\Exceptions\ZwyApiException;
 use DishCheng\ZwyApi\Services\ZwyParkService;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Database\Eloquent\Model;
 
@@ -47,13 +48,17 @@ class ZwyApiParkOrder extends Model
     }
 
     /**
-     * 调用列表接口
+     * @param null $perPage
+     * @param array $columns
+     * @param string $pageName
+     * @param null $page
      * @return LengthAwarePaginator
-     * @throws \Exception
+     * @throws ZwyApiException
      */
-    public static function paginate($perPage = 20)
+    public function paginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null)
     {
-        $currentPage = Request::get('page', 1);
+        $currentPage = $page ?: Paginator::resolveCurrentPage($pageName);
+        $perPage = $perPage ?: $this->perPage;
         //获取数据数组
         $service = ZwyParkService::getInstance();
         $searchData = [

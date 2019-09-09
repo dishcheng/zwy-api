@@ -5,6 +5,7 @@ namespace DishCheng\ZwyApi\Models\Park;
 use DishCheng\ZwyApi\Exceptions\ZwyApiException;
 use DishCheng\ZwyApi\Services\ZwyParkService;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,9 +17,19 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ZwyApiParkView extends Model
 {
-    public static function paginate($perPage = 20)
+    /**
+     * @param null $perPage
+     * @param array $columns
+     * @param string $pageName
+     * @param null $page
+     * @return LengthAwarePaginator
+     * @throws ZwyApiException
+     */
+    public function paginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null)
     {
-        $currentPage = Request::get('page', 1);
+        $currentPage = $page ?: Paginator::resolveCurrentPage($pageName);
+        $perPage = $perPage ?: $this->perPage;
+
         //获取数据数组
         $service = ZwyParkService::getInstance();
         $searchData = ['pageNum' => $perPage, 'pageNo' => $currentPage];

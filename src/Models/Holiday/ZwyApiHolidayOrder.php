@@ -6,6 +6,7 @@ use DishCheng\ZwyApi\Exceptions\ZwyApiException;
 use DishCheng\ZwyApi\Services\ZwyHolidayService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Request;
 
 
@@ -46,14 +47,18 @@ class ZwyApiHolidayOrder extends Model
     }
 
     /**
-     * 调用列表接口
+     * @param null $perPage
+     * @param array $columns
+     * @param string $pageName
+     * @param null $page
      * @return LengthAwarePaginator
-     * @throws \Exception
+     * @throws ZwyApiException
      */
-    public function paginate()
+    public function paginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null)
     {
-        $perPage = Request::get('per_page', 20);
-        $currentPage = Request::get('page', 1);
+        $currentPage = $page ?: Paginator::resolveCurrentPage($pageName);
+        $perPage = $perPage ?: $this->perPage;
+
         //获取数据数组
         $service = ZwyHolidayService::getInstance();
         $searchData = [
