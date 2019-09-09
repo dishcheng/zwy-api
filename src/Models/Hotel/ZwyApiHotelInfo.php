@@ -84,6 +84,8 @@ class ZwyApiHotelInfo extends Model
         return $this->paginate();
     }
 
+    protected $appends = ['rooms_arr'];
+
     /**
      * 房型 基本信息
      * @return array

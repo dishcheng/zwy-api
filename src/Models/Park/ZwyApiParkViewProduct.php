@@ -34,7 +34,7 @@ class ZwyApiParkViewProduct extends Model
         $service = ZwyParkService::getInstance();
         $res = $service->getProductDetailInfo($productNo);
         if (!$res['status']) {
-            throw new \Exception($res['msg']);
+            throw new ZwyApiException($res['msg']);
         }
         $data = $res['data']['product'];
         return self::newFromBuilder($data);
