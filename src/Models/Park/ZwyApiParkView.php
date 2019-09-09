@@ -17,6 +17,15 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ZwyApiParkView extends Model
 {
+    public $request_config = [];
+    public $zwy_service;
+
+    public function __construct(array $attributes = [])
+    {
+        $this->zwy_service = ZwyParkService::getInstance();
+        parent::__construct($attributes);
+    }
+
     /**
      * @param null $perPage
      * @param array $columns
@@ -31,13 +40,15 @@ class ZwyApiParkView extends Model
         $perPage = $perPage ?: $this->perPage;
 
         //获取数据数组
-        $service = ZwyParkService::getInstance();
+        if (!blank($this->request_config)) {
+            $this->zwy_service->request_config = $this->request_config;
+        };
         $searchData = ['pageNum' => $perPage, 'pageNo' => $currentPage];
         $request_arr = Request::except(['page']);
         if (!blank($request_arr)) {
             $searchData = array_merge($searchData, $request_arr);
         }
-        $res = $service->getViewInfo($searchData);
+        $res = $this->zwy_service->getViewInfo($searchData);
         if (!$res['status']) {
             throw new ZwyApiException($res['msg']);
         }

@@ -16,6 +16,7 @@ class ZwyParkService extends ClientRequestService
     //存放实例对象
     protected static $_instance = [];
 
+    public $request_config = [];
 
     /**
      * 第 2 章 产品列表接口

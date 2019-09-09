@@ -18,14 +18,17 @@ class ZwyApiParkViewTag extends Model
 {
     /**
      * 重写了，这里不分页
-     * @param array $columns
+     * @param array $request_config
      * @return \Illuminate\Database\Eloquent\Collection|Model[]
      * @throws ZwyApiException
      */
-    public static function all($columns = ['*'])
+    public static function all($request_config = [])
     {
         //获取数据数组
         $service = ZwyParkService::getInstance();
+        if (!blank($request_config)) {
+            $service->request_config = $request_config;
+        }
         $res = $service->getTagInfo();
         if (!$res['status']) {
             throw new ZwyApiException($res['msg']);

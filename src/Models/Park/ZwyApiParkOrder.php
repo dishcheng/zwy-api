@@ -22,6 +22,15 @@ class ZwyApiParkOrder extends Model
     protected $primaryKey = 'orderId';
     protected $keyType = 'string';
 
+    public $request_config = [];
+    public $zwy_service;
+
+    public function __construct(array $attributes = [])
+    {
+        $this->zwy_service = ZwyParkService::getInstance();
+        parent::__construct($attributes);
+    }
+
 
     /**
      * 调用详情接口
@@ -31,9 +40,10 @@ class ZwyApiParkOrder extends Model
      */
     public function findOrFail($orderId)
     {
-        $service = ZwyParkService::getInstance();
-
-        $res = $service->getOrderDetailInfo($orderId);
+        if (!blank($this->request_config)) {
+            $this->zwy_service->request_config = $this->request_config;
+        }
+        $res = $this->zwy_service->getOrderDetailInfo($orderId);
         if (!$res['status']) {
             throw new \Exception($res['msg']);
         }
@@ -60,7 +70,9 @@ class ZwyApiParkOrder extends Model
         $currentPage = $page ?: Paginator::resolveCurrentPage($pageName);
         $perPage = $perPage ?: $this->perPage;
         //获取数据数组
-        $service = ZwyParkService::getInstance();
+        if (!blank($this->request_config)) {
+            $this->zwy_service->request_config = $this->request_config;
+        }
         $searchData = [
             'pageNum' => $perPage,
             'pageNo' => $currentPage,
@@ -69,7 +81,7 @@ class ZwyApiParkOrder extends Model
         if (!blank($request_arr)) {
             $searchData = array_merge($searchData, $request_arr);
         }
-        $res = $service->getOrderListInfo($searchData);
+        $res = $this->zwy_service->getOrderListInfo($searchData);
         if (!$res['status']) {
             throw new ZwyApiException($res['msg']);
         }

@@ -6,6 +6,7 @@ use App\Constant\Constant;
 use DishCheng\ZwyApi\Exceptions\ZwyApiException;
 use DishCheng\ZwyApi\Services\ZwyHolidayService;
 use DishCheng\ZwyApi\Services\ZwyHotelService;
+use DishCheng\ZwyApi\Services\ZwyParkService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Arr;
@@ -24,6 +25,15 @@ class ZwyApiHotelInfo extends Model
     protected $keyType = 'string';
 
 
+    public $request_config = [];
+    public $zwy_service;
+
+    public function __construct(array $attributes = [])
+    {
+        $this->zwy_service = ZwyParkService::getInstance();
+        parent::__construct($attributes);
+    }
+
     /**
      * 1.1    获取自我游！！！单个！！！酒店/房型 基本信息
      * @param $productNo
@@ -32,8 +42,10 @@ class ZwyApiHotelInfo extends Model
      */
     public function findOrFail($productNo)
     {
-        $service = ZwyHotelService::getInstance();
-        $res = $service->getHotelAndRoomInfo($productNo);
+        if (!blank($this->request_config)) {
+            $this->zwy_service->request_config = $this->request_config;
+        }
+        $res = $this->zwy_service->getHotelAndRoomInfo($productNo);
         if (!$res['status']) {
             throw new ZwyApiException($res['msg']);
         }
@@ -55,7 +67,11 @@ class ZwyApiHotelInfo extends Model
         $currentPage = $page ?: Paginator::resolveCurrentPage($pageName);
         $perPage = $perPage ?: $this->perPage;
         //获取数据数组
-        $service = ZwyHotelService::getInstance();
+
+        if (!blank($this->request_config)) {
+            $this->zwy_service->request_config = $this->request_config;
+        }
+//        $service = ZwyHotelService::getInstance();
         $searchData = [
             'pageSize' => $perPage,
             'pageNo' => $currentPage,
@@ -64,7 +80,7 @@ class ZwyApiHotelInfo extends Model
         if (!blank($request_arr)) {
             $searchData = array_merge($searchData, $request_arr);
         }
-        $res = $service->getHotelInfo($searchData);
+        $res = $this->zwy_service->getHotelInfo($searchData);
         if (!$res['status']) {
             throw new ZwyApiException($res['msg']);
         }

@@ -18,18 +18,21 @@ use Illuminate\Support\Facades\Request;
  */
 class ZwyApiHotelPrice extends Model
 {
+
     /**
-     * 调用列表接口
-     * @param array $columns
+     * @param array $request_config
      * @return \Illuminate\Database\Eloquent\Collection|Model[]
      * @throws ZwyApiException
      */
-    public static function all($columns = ['*'])
+    public static function all($request_config = [])
     {
         $queryType = Request::get('queryType', 'hotelpriceall');
         $yearMonth = Request::get('yearMonth', date('Y-m'));
         //获取数据数组
         $service = ZwyHotelService::getInstance();
+        if (!blank($service)) {
+            $service->request_config = $request_config;
+        }
         $searchData = Request::only(['hotelIds', 'roomtypeIds', 'productIds']);
         if (blank($searchData)) {
             throw new ZwyApiException('酒店IDS,房型IDS,产品IDS不能同时为空');

@@ -16,21 +16,35 @@ class ClientRequestService
     const TimeOutSecond = 10;
 
 
+    public $request_config = [];
+    public $host = '';
+
     /**
      * 向自我游发起post请求
      * @param $path
      * @param array $data
+     * @param array $config
+     * @param string $host
      * @return array
      */
     public function zwy_post_request($path, $data = [])
     {
         $err_header = self::ZWY_ERROR_TITLE;
         try {
-            $request_data = [
-                'custId' => config('zwy_api.custId'),
-                'apikey' => config('zwy_api.apikey'),
-            ];
-            $url = config('zwy_api.domain') . $path;
+            if (blank($this->request_config)) {
+                $request_data = [
+                    'custId' => config('zwy_api.custId'),
+                    'apikey' => config('zwy_api.apikey'),
+                ];
+            } else {
+                $request_data = $this->request_config;
+            }
+            if (blank($this->host)) {
+                $host = config('zwy_api.domain');
+            } else {
+                $host = $this->host;
+            }
+            $url = $host . $path;
             $request_data_xml = self::xml_encode($data, 'order');
             $request_data['param'] = $request_data_xml;
             $res = $this->post_request($url, $request_data, 'form_params');
@@ -44,24 +58,36 @@ class ClientRequestService
         }
     }
 
+
     /**
      * 向自由行发起get请求
      * @param $path
      * @param array $data
+     * @param array $config
+     * @param string $host
      * @return array
      */
     public function zwy_get_request($path, $data = [])
     {
         $err_header = self::ZWY_ERROR_TITLE;
-        $request_data = [
-            'custId' => config('zwy_api.custId'),
-            'apikey' => config('zwy_api.apikey'),
-        ];
-        if (!blank($data)) {
-            $request_data = array_merge($request_data, $data);
+
+        if (blank($this->request_config)) {
+            $request_data = [
+                'custId' => config('zwy_api.custId'),
+                'apikey' => config('zwy_api.apikey'),
+            ];
+        } else {
+            $request_data = $this->request_config;
+        }
+//        dd($request_data);
+
+        if (blank($this->host)) {
+            $host = config('zwy_api.domain');
+        } else {
+            $host = $this->host;
         }
         try {
-            $url = config('zwy_api.domain') . $path;
+            $url = $host . $path;
             $res = $this->get_request($url, $request_data);
             return self::handle_zwy_request($path, $data, $res, $err_header);
         } catch (\GuzzleHttp\Exception\GuzzleException $exception) {

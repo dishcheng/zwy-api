@@ -20,6 +20,15 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ZwyApiParkViewProduct extends Model
 {
+    public $request_config = [];
+    public $zwy_service;
+
+    public function __construct(array $attributes = [])
+    {
+        $this->zwy_service = ZwyParkService::getInstance();
+        parent::__construct($attributes);
+    }
+
     protected $primaryKey = 'productNo';
     protected $keyType = 'string';
 
@@ -31,8 +40,10 @@ class ZwyApiParkViewProduct extends Model
      */
     public function findOrFail($productNo)
     {
-        $service = ZwyParkService::getInstance();
-        $res = $service->getProductDetailInfo($productNo);
+        if (!blank($this->request_config)) {
+            $this->zwy_service->request_config = $this->request_config;
+        };
+        $res = $this->zwy_service->getProductDetailInfo($productNo);
         if (!$res['status']) {
             throw new ZwyApiException($res['msg']);
         }
@@ -54,8 +65,6 @@ class ZwyApiParkViewProduct extends Model
         $currentPage = $page ?: Paginator::resolveCurrentPage($pageName);
         $perPage = $perPage ?: $this->perPage;
 
-        //获取数据数组
-        $service = ZwyParkService::getInstance();
         $searchData = [
             'pageNum' => $perPage,
             'pageNo' => $currentPage,
@@ -64,7 +73,10 @@ class ZwyApiParkViewProduct extends Model
         if (!blank($request_arr)) {
             $searchData = array_merge($searchData, $request_arr);
         }
-        $res = $service->getProductListInfo($searchData);
+        if (!blank($this->request_config)) {
+            $this->zwy_service->request_config = $this->request_config;
+        };
+        $res = $this->zwy_service->getProductListInfo($searchData);
         if (!$res['status']) {
             throw new ZwyApiException($res['msg']);
         }
@@ -90,8 +102,11 @@ class ZwyApiParkViewProduct extends Model
      */
     public function getStateAttribute()
     {
-        $service = ZwyParkService::getInstance();
-        $res = $service->getProductStateInfo($this->productNo);
+        //配置数组
+        if (!blank($this->request_config)) {
+            $this->zwy_service->request_config = $this->request_config;
+        }
+        $res = $this->zwy_service->getProductStateInfo($this->productNo);
         if (!$res['status']) {
             return $res['msg'];
         }
@@ -115,8 +130,11 @@ class ZwyApiParkViewProduct extends Model
      */
     public function getYsPriceArrAttribute()
     {
-        $service = ZwyParkService::getInstance();
-        $res = $service->getProductPriceInfo($this->productNo, Carbon::today()->toDateString());
+        //配置数组
+        if (!blank($this->request_config)) {
+            $this->zwy_service->request_config = $this->request_config;
+        }
+        $res = $this->zwy_service->getProductPriceInfo($this->productNo, Carbon::today()->toDateString());
         return $res;
     }
 
