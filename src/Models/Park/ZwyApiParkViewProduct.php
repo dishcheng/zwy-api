@@ -43,6 +43,7 @@ class ZwyApiParkViewProduct extends Model
         if (!blank($this->request_config)) {
             $this->zwy_service->request_config = $this->request_config;
         };
+//        dd($this->request_config);
         $res = $this->zwy_service->getProductDetailInfo($productNo);
         if (!$res['status']) {
             throw new ZwyApiException($res['msg']);

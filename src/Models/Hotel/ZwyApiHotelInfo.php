@@ -110,6 +110,7 @@ class ZwyApiHotelInfo extends Model
     {
         $rooms = $this->rooms;
         if (blank($rooms)) {
+            //列表页没有这个参数返回
             return [];
         }
         if (Arr::has($rooms, 'room')) {
