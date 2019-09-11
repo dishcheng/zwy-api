@@ -79,8 +79,9 @@ class ClientRequestService
         } else {
             $request_data = $this->request_config;
         }
-//        dd($request_data);
-
+        if (!blank($data)) {
+            $request_data = array_merge($request_data, $data);
+        }
         if (blank($this->host)) {
             $host = config('zwy_api.domain');
         } else {
@@ -89,7 +90,7 @@ class ClientRequestService
         try {
             $url = $host . $path;
             $res = $this->get_request($url, $request_data);
-            return self::handle_zwy_request($path, $data, $res, $err_header);
+            return self::handle_zwy_request($path, $request_data, $res, $err_header);
         } catch (\GuzzleHttp\Exception\GuzzleException $exception) {
             $msg = $err_header . 'NETWORK ERROR';
             Log::emergency($msg . ':' . $exception->getMessage());
