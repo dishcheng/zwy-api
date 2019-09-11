@@ -30,7 +30,7 @@ class ZwyApiHotelInfo extends Model
 
     public function __construct(array $attributes = [])
     {
-        $this->zwy_service = ZwyParkService::getInstance();
+        $this->zwy_service = ZwyHotelService::getInstance();
         parent::__construct($attributes);
     }
 
