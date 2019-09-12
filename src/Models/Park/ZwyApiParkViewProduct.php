@@ -125,18 +125,24 @@ class ZwyApiParkViewProduct extends Model
 
 
     /**
-     * 针对 tree_id=12 的抢购预售产品的价格库存
-     * @return mixed
-     * @throws \Exception
+     * 产品价格日历接口
+     * @param $productNo
+     * @param $travelDay
+     * @param string $endDay
+     * @return array
+     * @throws ZwyApiException
      */
-    public function getYsPriceArrAttribute()
+    public function getPrice($productNo, $travelDay, $endDay = '')
     {
         //配置数组
         if (!blank($this->request_config)) {
             $this->zwy_service->request_config = $this->request_config;
         }
-        $res = $this->zwy_service->getProductPriceInfo($this->productNo, Carbon::today()->toDateString());
-        return $res;
+        $res = $this->zwy_service->getProductPriceInfo($productNo, $travelDay, $endDay);
+        if (!$res['status']) {
+            throw new ZwyApiException($res['msg']);
+        }
+        return $res['data'];
     }
 
     public static function with($relations)
