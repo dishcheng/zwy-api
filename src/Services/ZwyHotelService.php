@@ -126,7 +126,7 @@ class ZwyHotelService extends ClientRequestService
      * @param $orderId '自我游订单号
      * @return array
      */
-    public function orderPay($orderId)
+    public function tellOrderPaid($orderId)
     {
         $path = 'api/hotel/pay.jsp';
         $data = ['orderId' => $orderId];
