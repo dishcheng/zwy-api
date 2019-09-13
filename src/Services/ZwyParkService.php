@@ -319,7 +319,7 @@ class ZwyParkService extends ClientRequestService
      */
     public function resend($orderId, $mobile)
     {
-        $path = 'api/tag.jsp';
+        $path = 'api/resend.jsp';
         $data = ['orderId' => $orderId, 'mobile' => $mobile];
         return $this->zwy_get_request($path, $data);
     }
