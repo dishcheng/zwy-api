@@ -62,8 +62,22 @@ class ZwyApiHotelPrice extends Model
             }
             return static::hydrate($dataList);
         } else {
+            //todo::产品不存在或者已下架居然状态返回1，真实日了狗了
+            /**
+             * {
+             * "status_code": 200,
+             * "message": "ok",
+             * "data": {
+             * "success": [
+             * "1"
+             * ],
+             * "msg": [
+             * "产品不存在或者已下架"
+             * ]
+             * }
+             * }
+             */
             return static::hydrate($data);
-//            throw new ZwyApiException('返回数据没有rooms.room属性');
         }
     }
 
