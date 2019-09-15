@@ -2,6 +2,7 @@
 
 namespace DishCheng\ZwyApi\Models\Hotel;
 
+use App\Exceptions\ApiCommonException;
 use DishCheng\ZwyApi\Exceptions\ZwyApiException;
 use DishCheng\ZwyApi\Services\ZwyHotelService;
 use Carbon\Carbon;
@@ -19,34 +20,48 @@ use Illuminate\Support\Facades\Request;
 class ZwyApiHotelPrice extends Model
 {
 
+
     /**
      * @param array $request_config
+     * @param array $searchData
      * @return \Illuminate\Database\Eloquent\Collection|Model[]
      * @throws ZwyApiException
      */
-    public static function all($request_config = [])
+    public static function all($request_config = [], $searchData = [])
     {
-        $queryType = Request::get('queryType', 'hotelpriceall');
-        $checkInDate = Request::get('checkInDate');
-        $checkOutDate = Request::get('checkOutDate');
-        if (blank($checkInDate) || blank($checkOutDate)) {
-            throw new ZwyApiException('查询日期范围不能为空');
-        }
-        $searchData = Request::only(['hotelIds', 'roomtypeIds', 'productIds']);
-        if (blank($searchData)) {
-            throw new ZwyApiException('酒店IDS,房型IDS,产品IDS不能同时为空');
-        }
-
         //获取数据数组
         $service = ZwyHotelService::getInstance();
         if (!blank($service)) {
             $service->request_config = $request_config;
         }
-        $request_arr = Request::except(['queryType', 'checkInDate', 'checkOutDate', 'hotelIds', 'roomtypeIds', 'productIds']);
-        if (!blank($request_arr)) {
-            $searchData = array_merge($searchData, $request_arr);
+        if (blank($searchData)) {
+            $queryType = Request::get('queryType', 'hotelpriceall');
+            $checkInDate = Request::get('checkInDate');
+            $checkOutDate = Request::get('checkOutDate');
+            if (blank($checkInDate) || blank($checkOutDate)) {
+                throw new ZwyApiException('查询日期范围不能为空');
+            }
+            $searchData = Request::only(['hotelIds', 'roomtypeIds', 'productIds']);
+            if (blank($searchData)) {
+                throw new ZwyApiException('酒店IDS,房型IDS,产品IDS不能同时为空');
+            }
+            $request_arr = Request::except(['queryType', 'checkInDate', 'checkOutDate', 'hotelIds', 'roomtypeIds', 'productIds']);
+            if (!blank($request_arr)) {
+                $searchData = array_merge($searchData, $request_arr);
+            }
+            $res = $service->getPriceInfo($queryType, $checkInDate, $checkOutDate, $searchData);
+        } else {
+            if (Arr::has($searchData, ['queryType', 'checkInDate', 'checkOutDate'])) {
+                throw new ZwyApiException('缺少参数');
+            }
+            $res = $service->getPriceInfo(
+                $searchData['queryType'],
+                $searchData['checkInDate'],
+                $searchData['checkOutDate'],
+                Arr::except($searchData, ['queryType', 'checkInDate', 'checkOutDate']));
         }
-        $res = $service->getPriceInfo($queryType, $checkInDate, $checkOutDate, $searchData);
+
+
         if (!$res['status']) {
             throw new ZwyApiException($res['msg']);
         }
@@ -62,7 +77,7 @@ class ZwyApiHotelPrice extends Model
             }
             return static::hydrate($dataList);
         } else {
-            //todo::产品不存在或者已下架居然状态返回1，真实日了狗了
+            //产品不存在或者已下架居然状态返回1，真实日了狗了
             /**
              * {
              * "status_code": 200,
