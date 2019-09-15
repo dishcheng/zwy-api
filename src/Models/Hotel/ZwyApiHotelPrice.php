@@ -27,24 +27,29 @@ class ZwyApiHotelPrice extends Model
     public static function all($request_config = [])
     {
         $queryType = Request::get('queryType', 'hotelpriceall');
-        $yearMonth = Request::get('yearMonth', date('Y-m'));
         $prodInfo = Request::get('prodInfo', 1);
-        //获取数据数组
-        $service = ZwyHotelService::getInstance();
-        if (!blank($service)) {
-            $service->request_config = $request_config;
+        $checkInDate = Request::get('checkInDate');
+        $checkOutDate = Request::get('checkOutDate');
+        if (blank($checkInDate) || blank($checkOutDate)) {
+            throw new ZwyApiException('查询日期范围不能为空');
         }
         $searchData = Request::only(['hotelIds', 'roomtypeIds', 'productIds']);
         if (blank($searchData)) {
             throw new ZwyApiException('酒店IDS,房型IDS,产品IDS不能同时为空');
+        }
+
+        //获取数据数组
+        $service = ZwyHotelService::getInstance();
+        if (!blank($service)) {
+            $service->request_config = $request_config;
         }
         $request_arr = Request::except(['queryType', 'yearMonth', 'hotelIds', 'roomtypeIds', 'productIds']);
         if (!blank($request_arr)) {
             $searchData = array_merge($searchData, $request_arr);
         }
         $searchData = array_merge(['prodInfo' => $prodInfo], $searchData);
-        $checkInDate = Carbon::parse($yearMonth)->startOfMonth()->toDateString();
-        $checkOutDate = Carbon::parse($yearMonth)->endOfMonth()->toDateString();
+
+
         $res = $service->getPriceInfo($queryType, $checkInDate, $checkOutDate, $searchData);
         if (!$res['status']) {
             throw new ZwyApiException($res['msg']);
