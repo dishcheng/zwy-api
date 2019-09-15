@@ -62,7 +62,7 @@ class ZwyApiHotelPrice extends Model
             }
             return static::hydrate($dataList);
         } else {
-            return static::hydrate($data['rooms']);
+            return static::hydrate($data);
 //            throw new ZwyApiException('返回数据没有rooms.room属性');
         }
     }
