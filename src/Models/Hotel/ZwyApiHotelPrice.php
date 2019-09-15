@@ -51,7 +51,7 @@ class ZwyApiHotelPrice extends Model
             }
             $res = $service->getPriceInfo($queryType, $checkInDate, $checkOutDate, $searchData);
         } else {
-            if (Arr::has($searchData, ['queryType', 'checkInDate', 'checkOutDate'])) {
+            if (!Arr::has($searchData, ['queryType', 'checkInDate', 'checkOutDate'])) {
                 throw new ZwyApiException('缺少参数');
             }
             $res = $service->getPriceInfo(
