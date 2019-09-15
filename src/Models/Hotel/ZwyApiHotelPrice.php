@@ -43,7 +43,7 @@ class ZwyApiHotelPrice extends Model
         if (!blank($service)) {
             $service->request_config = $request_config;
         }
-        $request_arr = Request::except(['queryType', 'yearMonth', 'hotelIds', 'roomtypeIds', 'productIds']);
+        $request_arr = Request::except(['queryType', 'checkInDate', 'checkOutDate', 'hotelIds', 'roomtypeIds', 'productIds']);
         if (!blank($request_arr)) {
             $searchData = array_merge($searchData, $request_arr);
         }
