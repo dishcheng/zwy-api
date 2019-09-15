@@ -27,7 +27,6 @@ class ZwyApiHotelPrice extends Model
     public static function all($request_config = [])
     {
         $queryType = Request::get('queryType', 'hotelpriceall');
-        $prodInfo = Request::get('prodInfo', 1);
         $checkInDate = Request::get('checkInDate');
         $checkOutDate = Request::get('checkOutDate');
         if (blank($checkInDate) || blank($checkOutDate)) {
@@ -47,9 +46,6 @@ class ZwyApiHotelPrice extends Model
         if (!blank($request_arr)) {
             $searchData = array_merge($searchData, $request_arr);
         }
-        $searchData = array_merge(['prodInfo' => $prodInfo], $searchData);
-
-
         $res = $service->getPriceInfo($queryType, $checkInDate, $checkOutDate, $searchData);
         if (!$res['status']) {
             throw new ZwyApiException($res['msg']);
@@ -66,7 +62,8 @@ class ZwyApiHotelPrice extends Model
             }
             return static::hydrate($dataList);
         } else {
-            throw new ZwyApiException('返回数据没有rooms.room属性');
+            return static::hydrate($data['rooms']);
+//            throw new ZwyApiException('返回数据没有rooms.room属性');
         }
     }
 
