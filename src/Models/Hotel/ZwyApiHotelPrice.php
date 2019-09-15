@@ -77,7 +77,7 @@ class ZwyApiHotelPrice extends Model
              * }
              * }
              */
-            return static::hydrate($data);
+            throw new ZwyApiException($data['msg']);
         }
     }
 
