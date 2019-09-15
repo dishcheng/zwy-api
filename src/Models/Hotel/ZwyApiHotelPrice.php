@@ -28,6 +28,7 @@ class ZwyApiHotelPrice extends Model
     {
         $queryType = Request::get('queryType', 'hotelpriceall');
         $yearMonth = Request::get('yearMonth', date('Y-m'));
+        $prodInfo = Request::get('prodInfo', 1);
         //获取数据数组
         $service = ZwyHotelService::getInstance();
         if (!blank($service)) {
@@ -41,6 +42,7 @@ class ZwyApiHotelPrice extends Model
         if (!blank($request_arr)) {
             $searchData = array_merge($searchData, $request_arr);
         }
+        $searchData = array_merge(['prodInfo' => $prodInfo], $searchData);
         $checkInDate = Carbon::parse($yearMonth)->startOfMonth()->toDateString();
         $checkOutDate = Carbon::parse($yearMonth)->endOfMonth()->toDateString();
         $res = $service->getPriceInfo($queryType, $checkInDate, $checkOutDate, $searchData);
