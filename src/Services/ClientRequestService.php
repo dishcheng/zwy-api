@@ -19,15 +19,15 @@ class ClientRequestService
     public $request_config = [];
     public $host = '';
 
+
     /**
      * 向自我游发起post请求
      * @param $path
      * @param array $data
-     * @param array $config
-     * @param string $host
+     * @param string $xml_root
      * @return array
      */
-    public function zwy_post_request($path, $data = [])
+    public function zwy_post_request($path, $data = [], $xml_root = 'order')
     {
         $err_header = self::ZWY_ERROR_TITLE;
         try {
@@ -45,7 +45,7 @@ class ClientRequestService
                 $host = $this->host;
             }
             $url = $host . $path;
-            $request_data_xml = self::xml_encode($data, 'order');
+            $request_data_xml = self::xml_encode($data, $xml_root);
             $request_data['param'] = $request_data_xml;
             $res = $this->post_request($url, $request_data, 'form_params');
             return self::handle_zwy_request($path, $data, $res, $err_header);
