@@ -16,6 +16,7 @@ class ZwyHotelService extends ClientRequestService
     //存放实例对象
     protected static $_instance = [];
 
+    public $request_config = [];
 
     /**
      * 3.1  获取自我游酒店/房型 基本信息

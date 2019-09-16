@@ -24,10 +24,11 @@ class ClientRequestService
      * 向自我游发起post请求
      * @param $path
      * @param array $data
-     * @param string $xml_root
+     * @param string $data_root_params
+     * @param string $numeric_node
      * @return array
      */
-    public function zwy_post_request($path, $data = [], $xml_root = 'order')
+    public function zwy_post_request($path, $data = [], $data_root_params = 'param', $numeric_node = 'detail')
     {
         $err_header = self::ZWY_ERROR_TITLE;
         try {
@@ -45,8 +46,8 @@ class ClientRequestService
                 $host = $this->host;
             }
             $url = $host . $path;
-            $request_data_xml = self::xml_encode($data, $xml_root);
-            $request_data['param'] = $request_data_xml;
+            $request_data_xml = self::xml_encode($data, $numeric_node);
+            $request_data[$data_root_params] = $request_data_xml;
             $res = $this->post_request($url, $request_data, 'form_params');
             return self::handle_zwy_request($path, $data, $res, $err_header);
         } catch (\GuzzleHttp\Exception\GuzzleException $exception) {
@@ -258,13 +259,16 @@ class ClientRequestService
 
 
     /**
-     * XML编码
      * @param mixed $data 数据
      * @param string $root 根节点名
      * @param string $encoding 数据编码
+     * @param string $numeric_node 子节点名称
+     *
+     * @param string $root
+     * @param string $encoding
      * @return string
      */
-    static function xml_encode($data, $root = 'root', $encoding = 'utf-8')
+    static function xml_encode($data, $numeric_node = 'detail', $root = 'root', $encoding = 'utf-8')
     {
         $xml = '<?xml version="1.0" encoding="' . $encoding . '"?>';
         $xml .= '<' . $root . '>';
@@ -273,20 +277,29 @@ class ClientRequestService
         return $xml;
     }
 
+
     /**
      * 数据XML编码
-     * @param mixed $data 数据
+     * @param $data
+     * @param string $numeric_node
      * @return string
      */
-    static function data_to_xml($data)
+    static function data_to_xml($data, $numeric_node = 'detail')
     {
         $xml = '';
         foreach ($data as $key => $val) {
-//            is_numeric($key) && $key = "item id=\"$key\"";
-            $xml .= "<$key>";
-            $xml .= (is_array($val) || is_object($val)) ? self::data_to_xml($val) : $val;
-            list($key,) = explode(' ', $key);
-            $xml .= "</$key>";
+            if (is_numeric($key)) {
+                $xml .= "<$numeric_node>";
+                $xml .= (is_array($val) || is_object($val)) ? self::data_to_xml($val) : $val;
+                list($key,) = explode(' ', $key);
+                $xml .= "</$numeric_node>";
+            } else {
+                $xml .= "<$key>";
+                $xml .= (is_array($val) || is_object($val)) ? self::data_to_xml($val) : $val;
+                list($key,) = explode(' ', $key);
+                $xml .= "</$key>";
+            }
+
         }
         return $xml;
     }
