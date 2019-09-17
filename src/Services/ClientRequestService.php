@@ -17,8 +17,6 @@ class ClientRequestService
 
 
     public $request_config = [];
-    public $host = '';
-
 
     /**
      * 向自我游发起post请求
@@ -32,6 +30,7 @@ class ClientRequestService
     {
         $err_header = self::ZWY_ERROR_TITLE;
         try {
+            $host = config('zwy_api.domain');
             if (blank($this->request_config)) {
                 $request_data = [
                     'custId' => config('zwy_api.custId'),
@@ -39,11 +38,10 @@ class ClientRequestService
                 ];
             } else {
                 $request_data = $this->request_config;
-            }
-            if (blank($this->host)) {
-                $host = config('zwy_api.domain');
-            } else {
-                $host = $this->host;
+                if (Arr::has($request_data, 'host')) {
+                    $host = $request_data['host'];
+                }
+                unset($request_data['host']);
             }
             $url = $host . $path;
             $request_data_xml = self::xml_encode($data, $numeric_node);
@@ -72,6 +70,7 @@ class ClientRequestService
     {
         $err_header = self::ZWY_ERROR_TITLE;
 
+        $host = config('zwy_api.domain');
         if (blank($this->request_config)) {
             $request_data = [
                 'custId' => config('zwy_api.custId'),
@@ -79,14 +78,13 @@ class ClientRequestService
             ];
         } else {
             $request_data = $this->request_config;
+            if (Arr::has($request_data, 'host')) {
+                $host = $request_data['host'];
+            }
+            unset($request_data['host']);
         }
         if (!blank($data)) {
             $request_data = array_merge($request_data, $data);
-        }
-        if (blank($this->host)) {
-            $host = config('zwy_api.domain');
-        } else {
-            $host = $this->host;
         }
         try {
             $url = $host . $path;
