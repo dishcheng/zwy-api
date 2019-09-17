@@ -2,6 +2,7 @@
 
 namespace DishCheng\ZwyApi\Services;
 
+use DishCheng\ZwyApi\Exceptions\ZwyApiException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 
@@ -41,6 +42,11 @@ class ClientRequestService
                 if (Arr::has($request_data, 'host')) {
                     $host = $request_data['host'];
                     unset($request_data['host']);
+                }else {
+                    return [
+                        'status' => false,
+                        'msg' => 'host参数获取失败'
+                    ];
                 }
             }
             $url = $host . $path;
@@ -81,6 +87,11 @@ class ClientRequestService
             if (Arr::has($request_data, 'host')) {
                 $host = $request_data['host'];
                 unset($request_data['host']);
+            } else {
+                return [
+                    'status' => false,
+                    'msg' => 'host参数获取失败'
+                ];
             }
         }
         if (!blank($data)) {

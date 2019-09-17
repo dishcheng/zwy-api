@@ -109,12 +109,14 @@ class ZwyApiParkViewProduct extends Model
         }
         $res = $this->zwy_service->getProductStateInfo($this->productNo);
         if (!$res['status']) {
-            return $res['msg'];
+            throw new ZwyApiException($res['msg']);
         }
         //这个是获取单个所以直接返回第一个状态即可
-        if (Arr::has($res, 'data.products.product')) {
+        if (Arr::has($res, 'data.products.product.productState')) {
             $records = $res['data']['products']['product'];
             return $records['productState'];
+        } else {
+            throw new ZwyApiException('自我游景点产品code' . $this->productNo . '状态获取失败');
         }
     }
 
