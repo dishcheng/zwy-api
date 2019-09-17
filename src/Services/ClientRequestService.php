@@ -40,8 +40,8 @@ class ClientRequestService
                 $request_data = $this->request_config;
                 if (Arr::has($request_data, 'host')) {
                     $host = $request_data['host'];
+                    unset($request_data['host']);
                 }
-                unset($request_data['host']);
             }
             $url = $host . $path;
             $request_data_xml = self::xml_encode($data, $numeric_node);
@@ -80,8 +80,8 @@ class ClientRequestService
             $request_data = $this->request_config;
             if (Arr::has($request_data, 'host')) {
                 $host = $request_data['host'];
+                unset($request_data['host']);
             }
-            unset($request_data['host']);
         }
         if (!blank($data)) {
             $request_data = array_merge($request_data, $data);
@@ -89,7 +89,7 @@ class ClientRequestService
         try {
             $url = $host . $path;
             $res = $this->get_request($url, $request_data);
-            return self::handle_zwy_request($path, $request_data, $res, $err_header);
+            return self::handle_zwy_request($url, $request_data, $res, $err_header);
         } catch (\GuzzleHttp\Exception\GuzzleException $exception) {
             $msg = $err_header . 'NETWORK ERROR';
             Log::emergency($msg . ':' . $exception->getMessage());
