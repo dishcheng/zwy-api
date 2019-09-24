@@ -6,5 +6,5 @@ use Exception;
 
 class ZwyApiException extends Exception
 {
-
+    const ProductDownCode = 101;
 }

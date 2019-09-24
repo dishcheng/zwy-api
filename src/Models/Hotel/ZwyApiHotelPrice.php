@@ -93,7 +93,7 @@ class ZwyApiHotelPrice extends Model
              * }
              * }
              */
-            throw new ZwyApiException($data['msg']);
+            throw new ZwyApiException($data['msg'], ZwyApiException::ProductDownCode);
         }
     }
 

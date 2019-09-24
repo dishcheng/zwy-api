@@ -116,7 +116,7 @@ class ZwyApiParkViewProduct extends Model
             $records = $res['data']['products']['product'];
             return $records['productState'];
         } else {
-            throw new ZwyApiException('自我游景点产品code' . $this->productNo . '状态获取失败');
+            throw new ZwyApiException('自我游景点产品code:' . $this->productNo . '状态获取失败');
         }
     }
 
