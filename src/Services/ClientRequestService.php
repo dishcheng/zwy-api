@@ -20,7 +20,7 @@ class ClientRequestService
     public $request_config = [];
 
     /**
-     * 向自我游发起post请求
+     * 向自我游发起post请求，有子节点的post请求
      * @param $path
      * @param array $data
      * @param string $data_root_params
@@ -42,7 +42,7 @@ class ClientRequestService
                 if (Arr::has($request_data, 'host')) {
                     $host = $request_data['host'];
                     unset($request_data['host']);
-                }else {
+                } else {
                     return [
                         'status' => false,
                         'msg' => 'host参数获取失败'
@@ -51,9 +51,15 @@ class ClientRequestService
             }
             $url = $host . $path;
             $request_data_xml = self::xml_encode($data, $numeric_node);
-            $request_data[$data_root_params] = $request_data_xml;
+            if (!blank($data_root_params)) {
+                //如果第三个参数不为空
+                $request_data[$data_root_params] = $request_data_xml;
+            } else {
+                //酒店支付不需要子节点
+                $request_data = array_merge($request_data, $data);
+            }
             $res = $this->post_request($url, $request_data, 'form_params');
-            return self::handle_zwy_request($url, $data, $res, $err_header);
+            return self::handle_zwy_request($url, $request_data, $res, $err_header);
         } catch (\GuzzleHttp\Exception\GuzzleException $exception) {
             Log::emergency($exception->getMessage());
             return [

@@ -131,7 +131,7 @@ class ZwyHotelService extends ClientRequestService
     {
         $path = 'api/hotel/orderPay.jsp';
         $data = ['orderId' => $orderId];
-        return $this->zwy_post_request($path, $data);
+        return $this->zwy_post_request($path, $data, null);
     }
 
 
