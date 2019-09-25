@@ -53,7 +53,7 @@ class ClientRequestService
             $request_data_xml = self::xml_encode($data, $numeric_node);
             $request_data[$data_root_params] = $request_data_xml;
             $res = $this->post_request($url, $request_data, 'form_params');
-            return self::handle_zwy_request($path, $data, $res, $err_header);
+            return self::handle_zwy_request($url, $data, $res, $err_header);
         } catch (\GuzzleHttp\Exception\GuzzleException $exception) {
             Log::emergency($exception->getMessage());
             return [
