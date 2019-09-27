@@ -10,6 +10,7 @@ use DishCheng\ZwyApi\Services\ZwyParkService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Database\Eloquent\Model;
 
@@ -67,11 +68,9 @@ class ZwyApiHotelInfo extends Model
         $currentPage = $page ?: Paginator::resolveCurrentPage($pageName);
         $perPage = $perPage ?: $this->perPage;
         //获取数据数组
-
         if (!blank($this->request_config)) {
             $this->zwy_service->request_config = $this->request_config;
         }
-//        $service = ZwyHotelService::getInstance();
         $searchData = [
             'pageSize' => $perPage,
             'pageNo' => $currentPage,
@@ -91,7 +90,9 @@ class ZwyApiHotelInfo extends Model
             $dataList = $totalCount == 1 ? static::hydrate([$recordData]) : static::hydrate($recordData);
             return new LengthAwarePaginator($dataList, $totalCount, $perPage, $currentPage);
         } else {
-            throw new ZwyApiException('返回数据没有hotels.hotel属性');
+            //$data会出现{"success":"1","msg":"酒店信息不存在"}
+            //妈个鸡
+            throw new ZwyApiException($data['msg']);
         }
     }
 
