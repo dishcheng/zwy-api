@@ -158,11 +158,11 @@ class ClientRequestService
             } else {
                 //请求出错
                 $msg = $err_header . 'STATUS WRONG';
-                Log::error($msg, [
-                    'path' => $path,
-                    'data' => $data,
-                    'res' => $resArr,
-                ]);
+//                Log::error($msg, [
+//                    'path' => $path,
+//                    'data' => $data,
+//                    'res' => $resArr,
+//                ]);
                 if (Str::contains($resArr['msg'], '程序错误')) {
                     /**
                      * 这样做的原因是自我游那边返回的错误在包含程序错误的时候会把请求出去的参数带上去，
