@@ -328,4 +328,29 @@ class ZwyParkService extends ClientRequestService
      * 第 18 章 异步同调通知推送
      * 我方提供地址
      */
+
+
+    /**
+     * 第 19 章 查询物流接口
+     * @param $orderId '系统返回的订单编号
+     * @return array
+     */
+    public function queryExpress($orderId)
+    {
+        $path = 'api/express.jsp';
+        $data = ['orderId' => $orderId];
+        return $this->zwy_get_request($path, $data);
+    }
+
+
+    /**
+     * 第 20 章 查询余额接口
+     * @return array
+     */
+    public function queryBalance()
+    {
+        $path = 'api/getCustBalance.jsp';
+        return $this->zwy_get_request($path);
+    }
+
 }
